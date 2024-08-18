@@ -6,12 +6,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.dev.shiftly.screens.admin.AddEmployee
 import com.dev.shiftly.screens.main.MainScreen
-import com.dev.shiftly.screens.signin.view_models.SignInViewModel
 import com.dev.shiftly.screens.signin.SignInScreen
-import com.kharedji.memosphere.presentation.screens.signup.SignUpScreen
+import com.dev.shiftly.screens.signin.view_models.SignInViewModel
 import com.dev.shiftly.screens.signup.view_models.SignUpViewModel
-import com.kharedji.memosphere.navigation.Screen
+import com.kharedji.memosphere.presentation.screens.signup.SignUpScreen
 
 @Composable
 fun Navigation(
@@ -37,11 +37,15 @@ fun Navigation(
             )
         }
 
-        composable(route = Screen.Main.route){
+        composable(route = Screen.Main.route) {
             MainScreen(
                 paddingValues = padding,
                 navController = navController
             )
+        }
+
+        composable(route = Screen.AddEmployee.route) {
+            AddEmployee(padding, navController)
         }
     }
 }

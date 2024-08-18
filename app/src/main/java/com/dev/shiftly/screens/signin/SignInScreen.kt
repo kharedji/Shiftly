@@ -35,7 +35,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.kharedji.memosphere.navigation.Screen
+import com.dev.shiftly.navigation.Screen
 import com.dev.shiftly.screens.signin.view_models.SignInViewModel
 
 @Composable
@@ -148,7 +148,7 @@ fun SignInScreen(
                     .background(Color.Black.copy(alpha = 0.3f))
                     .pointerInput(Unit) {}
             ) {
-                CircularProgressIndicator(
+                CircularProgressIndicator   (
                     modifier = Modifier
                         .width(64.dp)
                         .align(Alignment.Center)

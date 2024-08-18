@@ -28,6 +28,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.dev.shiftly.screens.admin.HomeScreen
+import com.dev.shiftly.screens.admin.PaySlips
+import com.dev.shiftly.screens.admin.Shifts
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -99,7 +101,8 @@ fun MainScreen(
         ) { page ->
             when (page) {
                 0 -> HomeScreen(navController = navController!!)
-                1 -> HomeScreen(navController = navController!!)
+                1 -> PaySlips(navController = navController!!)
+                3 -> Shifts(navController = navController!!)
             }
         }
     }

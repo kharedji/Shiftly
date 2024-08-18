@@ -13,4 +13,16 @@ class EmployeeViewModel @Inject constructor(private val repository: EmployeeRepo
     ViewModel() {
 
     val employees: LiveData<State<List<Employee>>> = repository.getEmployees()
+
+    fun addEmployee(employee: Employee): LiveData<State<String>> {
+        return repository.addEmployee(employee)
+    }
+
+    fun updateEmployee(employee: Employee): LiveData<State<String>> {
+        return repository.updateEmployee(employee)
+    }
+
+    fun deleteEmployee(employeeId: String): LiveData<State<String>> {
+        return repository.deleteEmployee(employeeId)
+    }
 }
