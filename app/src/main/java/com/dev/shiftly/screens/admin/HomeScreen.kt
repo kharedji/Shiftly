@@ -84,7 +84,7 @@ fun ProgressDialog() {
                 .background(Color.White, shape = RoundedCornerShape(8.dp)),
             contentAlignment = Alignment.Center
         ) {
-            CircularProgressIndicator()
+                CircularProgressIndicator()
         }
     }
 }

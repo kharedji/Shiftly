@@ -8,6 +8,7 @@ sealed class Screen(val route: String) {
     data object AddEmployee : Screen("addEmployee")
     data object EmployeeDetails : Screen("EmployeeDetails")
     data object Profile : Screen("profile")
+    data object AddShift : Screen("shift")
 
     fun withArgs(vararg args: String): String {
         return buildString {

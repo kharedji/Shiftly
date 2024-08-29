@@ -1,13 +1,14 @@
 {
   "project_info": {
-    "project_number": "642288872371",
-    "project_id": "shiftly-3809e",
-    "storage_bucket": "shiftly-3809e.appspot.com"
+    "project_number": "214557108142",
+    "firebase_url": "https://shiftly-7dba6-default-rtdb.firebaseio.com",
+    "project_id": "shiftly-7dba6",
+    "storage_bucket": "shiftly-7dba6.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:642288872371:android:247687b8e07447530679c6",
+        "mobilesdk_app_id": "1:214557108142:android:f08f77b5719e9327428a3f",
         "android_client_info": {
           "package_name": "com.dev.shiftly"
         }
@@ -15,7 +16,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCkeY3Af_wbvhaWewr92WBu214UjMKXDcI"
+          "current_key": "AIzaSyC0BdZ5Alzp4fVM3M11ADSNYzKn9LF2bgo"
         }
       ],
       "services": {

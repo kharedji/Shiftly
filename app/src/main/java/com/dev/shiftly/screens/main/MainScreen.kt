@@ -1,5 +1,6 @@
 package com.dev.shiftly.screens.main
 
+import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
@@ -29,9 +30,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.dev.shiftly.screens.admin.HomeScreen
 import com.dev.shiftly.screens.admin.PaySlips
-import com.dev.shiftly.screens.admin.Shifts
+import com.dev.shiftly.screens.admin.Shift
 import kotlinx.coroutines.launch
 
+@SuppressLint("NewApi")
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MainScreen(
@@ -101,8 +103,7 @@ fun MainScreen(
         ) { page ->
             when (page) {
                 0 -> HomeScreen(navController = navController!!)
-                1 -> PaySlips(navController = navController!!)
-                3 -> Shifts(navController = navController!!)
+                1 -> Shift(navController = navController!!)
             }
         }
     }
