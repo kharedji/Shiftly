@@ -1,10 +1,14 @@
 package com.dev.shiftly.screens.admin
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
@@ -72,9 +76,35 @@ fun Shift(navController: NavController) {
 
     @Composable
     fun ShiftItem(employee: Shifts, onClick: (Shifts) -> Unit) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = employee.employeeName, style = MaterialTheme.typography.titleLarge)
-            Text(text = employee.date, style = MaterialTheme.typography.bodyMedium)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp)
+                .background(MaterialTheme.colorScheme.onBackground, RoundedCornerShape(10.dp))
+                .padding(5.dp)
+        ) {
+            Text(
+                text = "Date: ${employee.employeeName}",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.surface
+            )
+            Text(
+                text = employee.date,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.surface
+
+            )
+
+            Text(
+                text = "Start Time: ${employee.startTime}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.surface
+            )
+            Text(
+                text = "End Time: ${employee.endTime}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.surface
+            )
         }
     }
 

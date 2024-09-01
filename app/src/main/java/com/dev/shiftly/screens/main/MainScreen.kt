@@ -15,6 +15,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LeadingIconTab
@@ -28,7 +29,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.dev.shiftly.screens.EmployeesPaySlips
 import com.dev.shiftly.screens.admin.HomeScreen
+import com.dev.shiftly.screens.admin.PaySlipItem
 import com.dev.shiftly.screens.admin.PaySlips
 import com.dev.shiftly.screens.admin.Shift
 import kotlinx.coroutines.launch
@@ -44,13 +47,14 @@ fun MainScreen(
         initialPage = 0,
         initialPageOffsetFraction = 0f
     ) {
-        2
+        3
     }
 
     val scope = rememberCoroutineScope()
     val tabData = listOf(
         "Employees" to Icons.Filled.Person,
-        "Shifts" to Icons.Filled.DateRange
+        "Shifts" to Icons.Filled.DateRange,
+        "PaySlips" to Icons.Filled.Menu
     )
 
     BackHandler {
@@ -104,6 +108,7 @@ fun MainScreen(
             when (page) {
                 0 -> HomeScreen(navController = navController!!)
                 1 -> Shift(navController = navController!!)
+                2 -> EmployeesPaySlips(navController = navController!! )
             }
         }
     }

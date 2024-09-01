@@ -13,7 +13,7 @@ import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class ShiftsRepository @Inject constructor(){
+class ShiftsRepository @Inject constructor() {
     private val dbRef: DatabaseReference = FirebaseDatabase.getInstance().getReference("shifts")
 
     suspend fun saveShift(shift: Shifts): Result<Unit> {
@@ -31,7 +31,8 @@ class ShiftsRepository @Inject constructor(){
             if (existingShift != null) {
                 Result.failure(Exception("Employee already has a shift on this day"))
             } else {
-                val key = dbRef.push().key ?: return Result.failure(Exception("Failed to generate key"))
+                val key =
+                    dbRef.push().key ?: return Result.failure(Exception("Failed to generate key"))
                 shift.id = key
                 dbRef.child(key).setValue(shift).await()
                 Result.success(Unit)
@@ -40,8 +41,9 @@ class ShiftsRepository @Inject constructor(){
             Result.failure(e)
         }
     }
+
     fun getShifts(): LiveData<State<List<Shifts>>> {
-        val database =FirebaseDatabase.getInstance()
+        val database = FirebaseDatabase.getInstance()
 
         val stateLiveData = MutableLiveData<State<List<Shifts>>>()
         val shiftsRef = database.getReference("shifts")
@@ -57,7 +59,42 @@ class ShiftsRepository @Inject constructor(){
                 }
                 if (shifts.isNotEmpty()) {
                     stateLiveData.value = State.success(shifts)
-                }else{
+                } else {
+                    stateLiveData.value = State.error("No Shifts")
+
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                stateLiveData.value = State.error(error.message)
+            }
+        })
+
+        return stateLiveData
+    }
+
+    fun getEmployeeShifts(employee: Employee): LiveData<State<List<Shifts>>> {
+        val database = FirebaseDatabase.getInstance()
+
+        val stateLiveData = MutableLiveData<State<List<Shifts>>>()
+        val shiftsRef = database.getReference("shifts")
+
+        stateLiveData.value = State.loading()
+
+        shiftsRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val shifts = mutableListOf<Shifts>()
+                for (shiftsnapshot in snapshot.children) {
+                    val shift = shiftsnapshot.getValue(Shifts::class.java)
+                    shift?.let {
+                        if (employee.id == it.employeeId) {
+                            shifts.add(it)
+                        }
+                    }
+                }
+                if (shifts.isNotEmpty()) {
+                    stateLiveData.value = State.success(shifts)
+                } else {
                     stateLiveData.value = State.error("No Shifts")
 
                 }

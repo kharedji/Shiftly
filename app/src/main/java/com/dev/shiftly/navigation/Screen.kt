@@ -7,7 +7,10 @@ sealed class Screen(val route: String) {
     data object Home : Screen("home")
     data object AddEmployee : Screen("addEmployee")
     data object EmployeeDetails : Screen("EmployeeDetails")
+    data object EmployeePlaySlips: Screen("EmployeePaySlips")
     data object Profile : Screen("profile")
+    data object PaySlips : Screen("paySlips")
+    data object CreatePaySlips : Screen("createPaySlips")
     data object AddShift : Screen("shift")
 
     fun withArgs(vararg args: String): String {

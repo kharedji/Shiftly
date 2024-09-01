@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "com.dev.shiftly"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -97,6 +97,8 @@ dependencies {
     implementation(libs.hilt.navigation.compose)
     implementation(libs.javapoet) // <-- added this
     implementation ("androidx.multidex:multidex:2.0.1")
+
+    implementation ("com.google.code.gson:gson:2.11.0")
 
 
 

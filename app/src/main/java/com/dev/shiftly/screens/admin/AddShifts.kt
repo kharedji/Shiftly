@@ -24,6 +24,7 @@ import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.LocalContentColor
@@ -34,6 +35,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -62,8 +64,12 @@ import java.util.Locale
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddEmployeeShifts(paddingValues: PaddingValues,navController: NavController? = null, viewModel: EmployeeViewModel = hiltViewModel()) {
-    val shiftViewModel : ShiftsViewModel = hiltViewModel()
+fun AddEmployeeShifts(
+    paddingValues: PaddingValues,
+    navController: NavController? = null,
+    viewModel: EmployeeViewModel = hiltViewModel()
+) {
+    val shiftViewModel: ShiftsViewModel = hiltViewModel()
 
     val shiftState = shiftViewModel.shiftsState.observeAsState()
     val employeeState by viewModel.employees.observeAsState(State.loading())
@@ -73,7 +79,9 @@ fun AddEmployeeShifts(paddingValues: PaddingValues,navController: NavController?
     val (showEmployeeDialog, setShowEmployeeDialog) = remember { mutableStateOf(false) }
     val employees = remember { mutableStateListOf<Employee>() }
 
-    val (selectedDate, setSelectedDate) = remember { mutableStateOf(DatePickerState(Locale.ENGLISH)) }
+    val selectedDate = rememberDatePickerState(
+        initialSelectedDateMillis = Date().time
+    )
     val mTime = remember { mutableStateOf("") }
     val mEndTime = remember { mutableStateOf("") }
 
@@ -90,85 +98,92 @@ fun AddEmployeeShifts(paddingValues: PaddingValues,navController: NavController?
 
 
     when {
-        employeeState.loading || shiftState.value?.loading ==true -> ProgressDialog()
-        employeeState.error != null  -> ErrorScreen(message = employeeState.error)
-        employeeState.data != null -> employees.addAll(employeeState.data!!)
+        employeeState.loading || shiftState.value?.loading == true -> ProgressDialog()
+        employeeState.error != null -> ErrorScreen(message = employeeState.error)
+        employeeState.data != null -> {
+            employees.clear()
+            employees.addAll(employeeState.data!!)
+        }
         shiftState.value?.data == true -> navController?.navigateUp()
-        shiftState.value?.error != null -> Toast.makeText(context,shiftState.value?.error.toString(),Toast.LENGTH_SHORT).show()
+        shiftState.value?.error != null -> Toast.makeText(
+            context,
+            shiftState.value?.error.toString(),
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
-            val paddingValues = paddingValues
-            AddShift(
-                paddingValues = paddingValues, selectedEmployee, selectedDate,
-                showDatePicker, showStartTimePicker, showEndTimePicker, mTime, mEndTime,{ it->
-                    shiftViewModel.saveShift(it)
-                },{
-                    setShowEmployeeDialog(true)
-                }
-            )
+    AddShift(
+        paddingValues = paddingValues, selectedEmployee, selectedDate,
+        showDatePicker, showStartTimePicker, showEndTimePicker, mTime, mEndTime, { it ->
+            shiftViewModel.saveShift(it)
+//            navController?.navigateUp()
+        }, {
+            setShowEmployeeDialog(true)
+        }
+    )
 
-            if (showEmployeeDialog) {
-                EmployeeSelectionDialog(
-                    employees = employees,
-                    onEmployeeSelected = {
-                        setSelectedEmployee(it)
-                        setShowEmployeeDialog(false)
-                    },
-                    onDismissRequest = { setShowEmployeeDialog(false) }
-                )
-            }
+    if (showEmployeeDialog) {
+        EmployeeSelectionDialog(
+            employees = employees,
+            onEmployeeSelected = {
+                setSelectedEmployee(it)
+                setShowEmployeeDialog(false)
+            },
+            onDismissRequest = { setShowEmployeeDialog(false) }
+        )
+    }
 
-            // Date picker dialog
-            if (showDatePicker.value) {
-                DatePickerDialog(
-                    onDismissRequest = { showDatePicker.value = false },
-                    confirmButton = {
-                        TextButton(
-                            onClick = {
-                                showDatePicker.value = false
-                            }
-                        ) {
-                            Text("OK")
-                        }
-                    },
-                    dismissButton = {
-                        TextButton(
-                            onClick = {
-                                showDatePicker.value = false
-                            }
-                        ) {
-                            Text("Cancel")
-                        }
+    // Date picker dialog
+    if (showDatePicker.value) {
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker.value = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDatePicker.value = false
                     }
                 ) {
-                    DatePicker(state = selectedDate)
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showDatePicker.value = false
+                    }
+                ) {
+                    Text("Cancel")
                 }
             }
+        ) {
+            DatePicker(state = selectedDate)
+        }
+    }
 
-            // Start time picker dialog
-            if (showStartTimePicker.value) {
-                val mTimePickerDialog = TimePickerDialog(
-                    context,
-                    { _, hour: Int, minute: Int ->
-                        mTime.value = "$hour:$minute"
-                    }, mHour, mMinute, false
-                )
+    // Start time picker dialog
+    if (showStartTimePicker.value) {
+        val mTimePickerDialog = TimePickerDialog(
+            context,
+            { _, hour: Int, minute: Int ->
+                mTime.value = "$hour:$minute"
+            }, mHour, mMinute, false
+        )
 
-                mTimePickerDialog.show()
-                showStartTimePicker.value = false
-            }
+        mTimePickerDialog.show()
+        showStartTimePicker.value = false
+    }
 
-            if (showEndTimePicker.value) {
-                val mTimePickerDialog = TimePickerDialog(
-                    context,
-                    { _, hour: Int, minute: Int ->
-                        mEndTime.value = "$hour:$minute"
-                    }, mHour, mMinute, false
-                )
+    if (showEndTimePicker.value) {
+        val mTimePickerDialog = TimePickerDialog(
+            context,
+            { _, hour: Int, minute: Int ->
+                mEndTime.value = "$hour:$minute"
+            }, mHour, mMinute, false
+        )
 
-                mTimePickerDialog.show()
-                showEndTimePicker.value = false
-            }
+        mTimePickerDialog.show()
+        showEndTimePicker.value = false
+    }
 
 }
 
@@ -208,7 +223,10 @@ fun AddShift(
 
         // Date selection
         OutlinedTextField(
-            value = SimpleDateFormat("dd/MM/yyyy",Locale.ENGLISH).format(Date(selectedDate?.selectedDateMillis?: System.currentTimeMillis())),
+            value = SimpleDateFormat(
+                "dd/MM/yyyy",
+                Locale.ENGLISH
+            ).format(Date(selectedDate?.selectedDateMillis ?: System.currentTimeMillis())),
             onValueChange = {},
             enabled = false,
             colors = TextFieldDefaults.textFieldColors(
@@ -260,12 +278,15 @@ fun AddShift(
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = {
-                val date = SimpleDateFormat("dd/MM/yyyy",Locale.ENGLISH).format(Date(selectedDate!!.selectedDateMillis!!))
-                val start =mTime.value
+                val date = SimpleDateFormat(
+                    "dd/MM/yyyy",
+                    Locale.ENGLISH
+                ).format(Date(selectedDate!!.selectedDateMillis!!))
+                val start = mTime.value
                 val end = mEndTime.value
                 val employee = selectedEmployee?.name
                 val employeeID = selectedEmployee?.id
-                val shift = Shifts("",employeeID!!,employee!!,date,start,end)
+                val shift = Shifts("", employeeID!!, employee!!, date, start, end)
                 onClick(shift)
             },
             Modifier
@@ -276,7 +297,7 @@ fun AddShift(
         }
     }
 
-    fun addShift(employee: Employee, date: String, startTime: String, endTime:String){
+    fun addShift(employee: Employee, date: String, startTime: String, endTime: String) {
 
     }
 
@@ -299,7 +320,7 @@ fun EmployeeSelectionDialog(
                     style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier.padding(16.dp)
                 )
-                Divider()
+                HorizontalDivider()
                 LazyColumn {
                     items(employees) { employee ->
                         ListItem(
@@ -318,7 +339,7 @@ fun EmployeeSelectionDialog(
                                         style = MaterialTheme.typography.bodyMedium
                                     )
                                     Spacer(modifier = Modifier.height(5.dp))
-                                    Divider()
+                                    HorizontalDivider()
                                 }
 
                             }

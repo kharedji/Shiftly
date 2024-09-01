@@ -8,3 +8,4 @@ data class Shifts(
     var startTime : String = "",
     var endTime : String = ""
 )
+

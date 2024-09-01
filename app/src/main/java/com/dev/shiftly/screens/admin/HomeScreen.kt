@@ -1,6 +1,7 @@
 package com.dev.shiftly.screens.admin
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -60,7 +61,10 @@ fun HomeScreen(navController: NavController) {
             when {
                 employeeState.loading -> ProgressDialog()
                 employeeState.error != null -> ErrorScreen(message = employeeState.error)
-                employeeState.data != null -> EmployeeList(employees = employeeState.data!!, it,navController)
+                employeeState.data != null -> EmployeeList(employees = employeeState.data!!, it){
+//                    navController.navigate(Screen.EmployeeDetails.route)
+
+                }
             }
 
             if (showDialog) {
@@ -103,12 +107,12 @@ fun ErrorScreen(message: String?) {
 fun EmployeeList(
     employees: List<Employee>,
     paddingValues: PaddingValues,
-    navController: NavController
+    onClick: (Employee) -> Unit
 ) {
     LazyColumn(modifier = Modifier.padding(paddingValues)) {
         items(employees) { employee ->
             EmployeeItem(employee) { it ->
-                navController.navigate(Screen.EmployeeDetails.route)
+                onClick(it)
             }
         }
     }
@@ -116,9 +120,24 @@ fun EmployeeList(
 
 @Composable
 fun EmployeeItem(employee: Employee, onClick: (Employee) -> Unit) {
-    Column(modifier = Modifier.padding(16.dp)) {
-        Text(text = employee.name, style = MaterialTheme.typography.titleLarge)
-        Text(text = employee.position, style = MaterialTheme.typography.bodyMedium)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+            .background(MaterialTheme.colorScheme.onBackground, RoundedCornerShape(10.dp))
+            .padding(5.dp)
+            .clickable { onClick(employee) }
+    ) {
+        Text(
+            text = employee.name,
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.surface
+        )
+        Text(
+            text = "Position: ${employee.position}",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.surface
+        )
     }
 }
 

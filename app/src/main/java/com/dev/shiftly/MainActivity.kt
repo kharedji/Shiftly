@@ -98,17 +98,17 @@ fun MainScaffold(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "Shiftly",
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                actions = {
-
-                },
+//            TopAppBar(
+//                title = {
+//                    Text(
+//                        text = "Shiftly",
+//                        color = Color.White,
+//                        fontWeight = FontWeight.Bold
+//                    )
+////                },
+//                actions = {
+//
+//                },
 //                navigationIcon = {
 //                    IconButton(onClick = {
 //                        coroutineScope.launch {
@@ -121,11 +121,11 @@ fun MainScaffold(
 //                        )
 //                    }
 //                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    navigationIconContentColor = Color.White,
-                )
-            )
+//                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+//                    containerColor = MaterialTheme.colorScheme.primary,
+//                    navigationIconContentColor = Color.White,
+//                )
+//            )
         }
     ) {
         Navigation(it, navController)
