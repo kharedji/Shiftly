@@ -15,22 +15,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerState
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -54,7 +48,7 @@ import androidx.navigation.NavController
 import com.dev.shiftly.data.data_source.Employee
 import com.dev.shiftly.data.data_source.Shifts
 import com.dev.shiftly.data.utils.State
-import com.dev.shiftly.screens.admin.viewmodels.EmployeeViewModel
+import com.dev.shiftly.screens.admin.viewmodels.AdminViewModel
 import com.dev.shiftly.screens.admin.viewmodels.ShiftsViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -67,7 +61,7 @@ import java.util.Locale
 fun AddEmployeeShifts(
     paddingValues: PaddingValues,
     navController: NavController? = null,
-    viewModel: EmployeeViewModel = hiltViewModel()
+    viewModel: AdminViewModel = hiltViewModel()
 ) {
     val shiftViewModel: ShiftsViewModel = hiltViewModel()
 
@@ -165,7 +159,10 @@ fun AddEmployeeShifts(
         val mTimePickerDialog = TimePickerDialog(
             context,
             { _, hour: Int, minute: Int ->
-                mTime.value = "$hour:$minute"
+                // Format hour and minute to always have two digits
+                val formattedHour = String.format("%02d", hour)
+                val formattedMinute = String.format("%02d", minute)
+                mTime.value = "$formattedHour:$formattedMinute"
             }, mHour, mMinute, false
         )
 
@@ -177,7 +174,9 @@ fun AddEmployeeShifts(
         val mTimePickerDialog = TimePickerDialog(
             context,
             { _, hour: Int, minute: Int ->
-                mEndTime.value = "$hour:$minute"
+                val formattedHour = String.format("%02d", hour)
+                val formattedMinute = String.format("%02d", minute)
+                mEndTime.value = "$formattedHour:$formattedMinute"
             }, mHour, mMinute, false
         )
 

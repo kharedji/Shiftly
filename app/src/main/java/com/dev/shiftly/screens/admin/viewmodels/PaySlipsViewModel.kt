@@ -1,13 +1,10 @@
 package com.dev.shiftly.screens.admin.viewmodels
 
-import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dev.shiftly.data.data_source.Employee
 import com.dev.shiftly.data.data_source.PaySlips
-import com.dev.shiftly.data.data_source.Shifts
 import com.dev.shiftly.data.repository.EmployeePaySlipRepository
 import com.dev.shiftly.data.utils.State
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,10 +20,10 @@ class PaySlipsViewModel @Inject constructor(private val employeePaySlipRepos: Em
 
     fun allEmployeePaySlips(id: String): LiveData<State<List<PaySlips>>> = employeePaySlipRepos.getPaySlip(id)
 
-    fun saveShift(shifts: PaySlips) {
+    fun savePaySlip(paySlips: PaySlips) {
         _saveEmployeeSlipState.value = State.loading()
         viewModelScope.launch {
-            val result = employeePaySlipRepos.savePaySlip(shifts)
+            val result = employeePaySlipRepos.savePaySlip(paySlips)
             result.onSuccess {
                 _saveEmployeeSlipState.value = State.success(true)
             }.onFailure {

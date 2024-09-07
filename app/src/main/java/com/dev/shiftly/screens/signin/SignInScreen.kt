@@ -35,8 +35,10 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.dev.shiftly.SharedPrefsHelper
 import com.dev.shiftly.navigation.Screen
 import com.dev.shiftly.screens.signin.view_models.SignInViewModel
+import com.google.gson.Gson
 
 @Composable
 fun SignInScreen(
@@ -68,7 +70,14 @@ fun SignInScreen(
     // Therefore the NavController can route to the MainScreen.
     uiState?.value?.data?.let {
         navController?.apply {
-            navigate(Screen.Main.route)
+            val gson = Gson()
+            val json = gson.toJson(it)
+            SharedPrefsHelper.getInstance(context).PutString("user",json)
+            if (it.type == "admin"){
+                navigate(Screen.Main.route)
+            }else{
+                navigate(Screen.EmployeeHome.route)
+            }
                 /*.also {
                 popBackStack(
                     route = Screen.SignIn.route,

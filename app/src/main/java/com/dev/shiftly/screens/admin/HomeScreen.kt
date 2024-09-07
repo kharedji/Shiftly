@@ -34,23 +34,26 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.dev.shiftly.SharedPrefsHelper
 import com.dev.shiftly.data.data_source.Employee
 import com.dev.shiftly.data.utils.State
-import com.dev.shiftly.navigation.Screen
-import com.dev.shiftly.screens.admin.viewmodels.EmployeeViewModel
+import com.dev.shiftly.screens.admin.viewmodels.AdminViewModel
+import com.google.firebase.auth.FirebaseAuth
+import com.google.gson.Gson
 
 @Composable
 fun HomeScreen(navController: NavController) {
-    val viewModel: EmployeeViewModel = hiltViewModel()
+    val viewModel: AdminViewModel = hiltViewModel()
     val employeeState by viewModel.employees.observeAsState(State.loading())
     var showDialog by remember { mutableStateOf(false) }
-
+    val context = LocalContext.current
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = { showDialog = true }) {
@@ -71,7 +74,10 @@ fun HomeScreen(navController: NavController) {
                 AddEmployeeDialog(
                     onDismiss = { showDialog = false },
                     onAdd = { employee ->
-                        viewModel.addEmployee(employee)
+                        val gson = Gson()
+                        val currentUser = SharedPrefsHelper.getInstance(context).getString("user")
+                        val currentEmployee = gson.fromJson(currentUser,Employee::class.java)
+                        viewModel.addEmployee(employee,currentEmployee)
                     }
                 )
             }
@@ -144,6 +150,8 @@ fun EmployeeItem(employee: Employee, onClick: (Employee) -> Unit) {
 @Composable
 fun AddEmployeeDialog(onDismiss: () -> Unit, onAdd: (Employee) -> Unit) {
     var name by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
     var position by remember { mutableStateOf("") }
     var pay by remember { mutableStateOf("") }
 
@@ -163,6 +171,25 @@ fun AddEmployeeDialog(onDismiss: () -> Unit, onAdd: (Employee) -> Unit) {
                     value = name,
                     onValueChange = { name = it },
                     label = { Text("Name") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("Email") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text("Password") },
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -189,7 +216,7 @@ fun AddEmployeeDialog(onDismiss: () -> Unit, onAdd: (Employee) -> Unit) {
 
                 Button(
                     onClick = {
-                        val employee = Employee(name = name, position = position, hourlyRate = pay.toFloat())
+                        val employee = Employee(name = name, position = position, hourlyRate = pay.toFloat(), email = email, password = password, adminId = FirebaseAuth.getInstance().currentUser!!.uid)
                         onAdd(employee)
                         onDismiss()
                     },

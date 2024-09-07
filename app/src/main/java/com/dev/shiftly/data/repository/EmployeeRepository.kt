@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.dev.shiftly.data.data_source.Employee
 import com.dev.shiftly.data.utils.State
 import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -20,7 +21,7 @@ class EmployeeRepository @Inject constructor() {
 
         stateLiveData.value = State.loading()
 
-        employeesRef.addValueEventListener(object : ValueEventListener {
+        employeesRef.orderByChild("adminId").equalTo(FirebaseAuth.getInstance().currentUser!!.uid).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val employees = mutableListOf<Employee>()
                 for (employeeSnapshot in snapshot.children) {
@@ -38,28 +39,27 @@ class EmployeeRepository @Inject constructor() {
         return stateLiveData
     }
 
-    fun addEmployee(employee: Employee): LiveData<State<String>> {
+    fun addEmployee(employee: Employee, currentEmployee: Employee): LiveData<State<String>> {
         val database = FirebaseDatabase.getInstance()
         val stateLiveData = MutableLiveData<State<String>>()
         val employeesRef = database.getReference("employees")
 
         stateLiveData.value = State.loading()
+        val auth = FirebaseAuth.getInstance()
+        auth.createUserWithEmailAndPassword(employee.email, employee.password).addOnSuccessListener {
+            employee.id = it.user!!.uid
+            employeesRef.child(employee.id).setValue(employee)
+                .addOnSuccessListener {
+                    auth.signInWithEmailAndPassword(currentEmployee.email, currentEmployee.password)
+                    stateLiveData.value = State.success("Employee added successfully")
+                }
+                .addOnFailureListener { exception ->
+                    stateLiveData.value = State.error(exception.message ?: "Unknown error")
+                }
+        }.addOnFailureListener {
+            stateLiveData.value = State.error(it.message ?: "Unknown error")
 
-        val key = employeesRef.push().key
-        if (key == null) {
-            stateLiveData.value = State.error("Could not generate a new key")
-            return stateLiveData
         }
-
-        employee.id = key
-        employeesRef.child(key).setValue(employee)
-            .addOnSuccessListener {
-                stateLiveData.value = State.success("Employee added successfully")
-            }
-            .addOnFailureListener { exception ->
-                stateLiveData.value = State.error(exception.message ?: "Unknown error")
-            }
-
         return stateLiveData
     }
 

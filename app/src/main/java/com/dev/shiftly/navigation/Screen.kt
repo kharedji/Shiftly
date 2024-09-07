@@ -13,6 +13,10 @@ sealed class Screen(val route: String) {
     data object CreatePaySlips : Screen("createPaySlips")
     data object AddShift : Screen("shift")
 
+    data object EmployeeHome : Screen("employeeHome")
+
+
+
     fun withArgs(vararg args: String): String {
         return buildString {
             append(route)

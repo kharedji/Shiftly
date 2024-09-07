@@ -38,8 +38,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.dev.shiftly.data.data_source.Employee
+import com.dev.shiftly.data.data_source.PaySlips
 import com.dev.shiftly.data.data_source.Shifts
 import com.dev.shiftly.data.utils.State
+import com.dev.shiftly.screens.admin.viewmodels.PaySlipsViewModel
 import com.dev.shiftly.screens.admin.viewmodels.ShiftsViewModel
 import com.google.gson.Gson
 import java.text.SimpleDateFormat
@@ -62,27 +64,40 @@ fun AddEmployeePaySlip(navController: NavController, json: String) {
     var tax by remember { mutableStateOf("0") }
     var result by remember { mutableFloatStateOf(0f) }
     val verticalScroll = rememberScrollState()
-    val list = mutableListOf<Shifts>()
+    val list = remember { mutableListOf<Shifts>() }
 
     val gson = Gson()
-    val employee = gson.fromJson(json, Employee::class.java)
-    var payPerHour by remember { mutableStateOf(employee.hourlyRate) }
+    val employee = remember {
+        mutableStateOf(Employee())
+    }
+    var payPerHour by remember { mutableFloatStateOf(0f) }
+
+    var paySlip = remember {
+        mutableStateOf(PaySlips())
+    }
+
 
     // Get today's month and year
 
 
     // ViewModel and State
     val viewModel: ShiftsViewModel = hiltViewModel()
+    val paySlipsViewModel: PaySlipsViewModel = hiltViewModel()
+    val paySlipState by paySlipsViewModel.saveEmployeeSlipState.observeAsState()
+
+
     LaunchedEffect(Unit) {
-        viewModel.shiftsState(employee)
+        employee.value = gson.fromJson(json, Employee::class.java)
+        payPerHour = employee.value.hourlyRate
+        paySlip.value.employeeId = employee.value.id
+        viewModel.shiftsState(employee.value)
         selectedMonth.value = SimpleDateFormat("MM").format(Date())
         selectedYear.value = SimpleDateFormat("yyyy").format(Date())
-
     }
     val state = viewModel.allShifts.observeAsState()
 
     // Calculate total salary whenever relevant values change
-    LaunchedEffect(workingHours, overTime, payPerHour, tax, deductions) {
+    LaunchedEffect(workingHours.value, overTime, payPerHour, tax, deductions) {
         val totalWorkingHours = workingHours.value.toFloatOrNull() ?: 0f
         val overtimeHours = overTime.toFloatOrNull() ?: 0f
         val payRate = payPerHour ?: 0f
@@ -91,23 +106,37 @@ fun AddEmployeePaySlip(navController: NavController, json: String) {
 
         val totalPay = (totalWorkingHours + overtimeHours) * payRate
         result = totalPay - taxAmount - deductionAmount
+        paySlip.value.totalWorkingHours = totalWorkingHours
+        paySlip.value.salaryPerHour = payRate
+        paySlip.value.totalSalary = totalPay
+        paySlip.value.tax = taxAmount
+        paySlip.value.deduction = deductionAmount
+        paySlip.value.date = SimpleDateFormat("dd/MM/yyyy").format(Date())
     }
 
-    LaunchedEffect(selectedMonth, selectedYear.value) {
+    LaunchedEffect(selectedMonth.value, selectedYear.value) {
         workingHours.value =
             viewModel.calculateMonthlyWorkingHours(list, selectedMonth.value, selectedYear.value)
                 .toString()
     }
-    // UI
-    when {
-        state.value?.data?.isNotEmpty() == true -> {
+
+    LaunchedEffect(key1 = state.value?.data) {
+        if (state.value?.data?.isNotEmpty() == true) {
             list.clear()
             list.addAll(state.value!!.data ?: emptyList())
             workingHours.value = viewModel.calculateMonthlyWorkingHours(
-                state.value?.data ?: emptyList(),
+                list,
                 selectedMonth.value,
                 selectedYear.value
             ).toString()
+        }
+    }
+    // UI
+    when {
+        state.value?.data?.isNotEmpty() == true -> {
+//            list.clear()
+//            list.addAll(state.value!!.data ?: emptyList())
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -207,7 +236,7 @@ fun AddEmployeePaySlip(navController: NavController, json: String) {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(onClick = {
-
+                    paySlipsViewModel.savePaySlip(paySlip.value)
                 }) {
                     Text("Submit")
                 }

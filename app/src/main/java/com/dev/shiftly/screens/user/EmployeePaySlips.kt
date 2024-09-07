@@ -1,4 +1,4 @@
-package com.dev.shiftly.screens.admin
+package com.dev.shiftly.screens.user
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -9,66 +9,56 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.dev.shiftly.SharedPrefsHelper
 import com.dev.shiftly.data.data_source.Employee
 import com.dev.shiftly.data.data_source.PaySlips
-import com.dev.shiftly.data.data_source.Shifts
-import com.dev.shiftly.data.utils.State
-import com.dev.shiftly.navigation.Screen
+import com.dev.shiftly.screens.admin.PaySlipsList
 import com.dev.shiftly.screens.admin.viewmodels.PaySlipsViewModel
 import com.google.gson.Gson
 
 @Composable
-fun PaySlips(navController: NavController? = null, employee: Employee) {
+fun EmployeePaySlips(navController: NavController? = null){
 
+    val context = LocalContext.current
+    var currentUser = remember { mutableStateOf(Employee()) }
     val paySlipsViewModel: PaySlipsViewModel = hiltViewModel()
-    val employeeState by paySlipsViewModel.allEmployeePaySlips(employee.id).observeAsState()
-    Scaffold(
-        floatingActionButton = {
-
-            FloatingActionButton(onClick = {
-                val gson = Gson()
-                val employeesJson = gson.toJson(employee)
-
-                navController?.navigate(Screen.CreatePaySlips.withArgs("${employeesJson}")) }) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Add Employee")
-            }
-        },
-        content = {
-            when {
-                employeeState?.loading == true -> ProgressDialog()
-                employeeState?.error != null -> ErrorScreen(message = employeeState!!.error)
-                employeeState?.data != null -> PaySlipsList(
-                    paySlips = employeeState!!.data!!,
-                    it,
-                    navController!!
-                )
-            }
+    val paySlipState by paySlipsViewModel.allEmployeePaySlips(currentUser.value.id).observeAsState()
+    LaunchedEffect(key1 = Unit) {
+        val userJson = SharedPrefsHelper.getInstance(context).getString("user")
+        if (userJson != null) {
+            currentUser.value = Gson().fromJson(userJson, Employee::class.java)
         }
-    )
+    }
+
+    when {
+        paySlipState?.loading == true -> com.dev.shiftly.screens.admin.ProgressDialog()
+        paySlipState?.error != null -> com.dev.shiftly.screens.admin.ErrorScreen(message = paySlipState!!.error)
+        paySlipState?.data != null -> PaySlipsList(
+            paySlips = paySlipState!!.data!!,
+            navController!!
+        )
+    }
 }
 
 @Composable
 fun PaySlipsList(
     paySlips: List<PaySlips>,
-    paddingValues: PaddingValues,
     navController: NavController
 ) {
-    LazyColumn(modifier = Modifier.padding(paddingValues)) {
+    LazyColumn(modifier = Modifier.padding(5.dp)) {
         items(paySlips) { employee ->
             PaySlipItem(employee) { it ->
 //                navController.navigate(Screen.EmployeeDetails.route)
@@ -108,10 +98,4 @@ fun PaySlipItem(paySlip: PaySlips, onClick: (PaySlips) -> Unit) {
             color = MaterialTheme.colorScheme.surface
         )
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PaySlipsPreview() {
-
 }

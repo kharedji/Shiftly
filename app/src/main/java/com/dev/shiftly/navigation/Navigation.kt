@@ -16,6 +16,7 @@ import com.dev.shiftly.screens.main.MainScreen
 import com.dev.shiftly.screens.signin.SignInScreen
 import com.dev.shiftly.screens.signin.view_models.SignInViewModel
 import com.dev.shiftly.screens.signup.view_models.SignUpViewModel
+import com.dev.shiftly.screens.user.EmployeeHome
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.kharedji.memosphere.presentation.screens.signup.SignUpScreen
@@ -77,6 +78,10 @@ fun Navigation(
 
             Log.e("aaa", "Navigation: ${json}", )
             AddEmployeePaySlip(navController = navController, json)
+        }
+
+        composable(route =  Screen.EmployeeHome.route){
+            EmployeeHome(navController = navController)
         }
     }
 }
