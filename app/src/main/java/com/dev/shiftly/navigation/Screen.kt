@@ -12,6 +12,8 @@ sealed class Screen(val route: String) {
     data object PaySlips : Screen("paySlips")
     data object CreatePaySlips : Screen("createPaySlips")
     data object AddShift : Screen("shift")
+    data object PaySlipDetails : Screen("paySlipDetails")
+    data object ShiftDetails : Screen("shiftDetails")
 
     data object EmployeeHome : Screen("employeeHome")
 

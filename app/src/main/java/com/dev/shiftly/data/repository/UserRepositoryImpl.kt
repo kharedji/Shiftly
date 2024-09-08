@@ -1,12 +1,14 @@
 package com.dev.shiftly.data.repository
 
+import android.content.Context
+import com.dev.shiftly.SharedPrefsHelper
 import com.dev.shiftly.data.data_source.Employee
 import com.dev.shiftly.data.utils.State
-import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.dev.shiftly.domain.repository.UserRepository
 import com.google.firebase.database.FirebaseDatabase
+import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
@@ -22,13 +24,16 @@ class UserRepositoryImpl() : UserRepository {
      * @param password
      * @return Flow<State<AuthResult>>
      */
-    override suspend fun signUpUser(email: String, password: String) = flow {
+    override suspend fun signUpUser(employee: Employee, context: Context) = flow {
         emit(State.loading())
-        auth.createUserWithEmailAndPassword(email, password).await().run {
-            val employee =
-                Employee(this.user!!.uid, email = email, password = password, type = "admin")
-            database.getReference("employees").child(employee.id).setValue(employee)
-            emit(State.success(this))
+        auth.createUserWithEmailAndPassword(employee.email, employee.password).await().run {
+            this.user?.uid?.let {
+                val json = Gson().toJson(employee)
+                SharedPrefsHelper.getInstance(context).putString("user",json)
+                employee.id = it
+                database.getReference("employees").child(it).setValue(employee)
+                emit(State.success(this))
+            }
         }
     }.catch {
         emit(State.error(it.message ?: UNKNOWN_ERROR))

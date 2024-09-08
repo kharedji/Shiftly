@@ -16,6 +16,8 @@ import com.dev.shiftly.screens.admin.ErrorScreen
 import com.dev.shiftly.screens.admin.ProgressDialog
 import com.dev.shiftly.screens.admin.viewmodels.AdminViewModel
 import com.google.gson.Gson
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,7 +37,8 @@ fun EmployeesPaySlips(navController: NavController, employeeViewModel: AdminView
                 employeeState.data != null -> EmployeeList(employees = employeeState.data!!, it){ employeee->
                     val gson = Gson()
                     val string = gson.toJson(employeee)
-                    navController.navigate(Screen.PaySlips.withArgs("${string}"))
+                    val encodedJson = URLEncoder.encode(string, StandardCharsets.UTF_8.toString())
+                    navController.navigate(Screen.PaySlips.withArgs(encodedJson))
                 }
             }
         }

@@ -31,27 +31,35 @@ import com.dev.shiftly.data.utils.State
 import com.dev.shiftly.navigation.Screen
 import com.dev.shiftly.screens.admin.viewmodels.PaySlipsViewModel
 import com.google.gson.Gson
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @Composable
-fun PaySlips(navController: NavController? = null, employee: Employee) {
+fun PaySlips(navController: NavController? = null, paddingValues: PaddingValues, employee: Employee) {
 
     val paySlipsViewModel: PaySlipsViewModel = hiltViewModel()
     val employeeState by paySlipsViewModel.allEmployeePaySlips(employee.id).observeAsState()
     Scaffold(
+        modifier = Modifier.padding(paddingValues),
         floatingActionButton = {
 
             FloatingActionButton(onClick = {
                 val gson = Gson()
                 val employeesJson = gson.toJson(employee)
+                val encodedJson = URLEncoder.encode(employeesJson, StandardCharsets.UTF_8.toString())
 
-                navController?.navigate(Screen.CreatePaySlips.withArgs("${employeesJson}")) }) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Add Employee")
+                navController?.navigate(Screen.CreatePaySlips.withArgs("${encodedJson}")) }) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add Employee",
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
             }
         },
         content = {
             when {
                 employeeState?.loading == true -> ProgressDialog()
-                employeeState?.error != null -> ErrorScreen(message = employeeState!!.error)
+                employeeState?.error != null -> ErrorScreen(message = employeeState!!.error, it)
                 employeeState?.data != null -> PaySlipsList(
                     paySlips = employeeState!!.data!!,
                     it,
@@ -83,29 +91,29 @@ fun PaySlipItem(paySlip: PaySlips, onClick: (PaySlips) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
-            .background(MaterialTheme.colorScheme.onBackground, RoundedCornerShape(10.dp))
+            .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(10.dp))
             .padding(5.dp)
             .clickable { onClick(paySlip) }
     ) {
         Text(
             text = paySlip.date,
             style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.surface
+            color = MaterialTheme.colorScheme.onSecondaryContainer
         )
         Text(
             text = "Working Hours: ${paySlip.totalWorkingHours}",
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.surface
+            color = MaterialTheme.colorScheme.onSecondaryContainer
         )
         Text(
             text = "Salary Per Hour: ${paySlip.salaryPerHour}",
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.surface
+            color = MaterialTheme.colorScheme.onSecondaryContainer
         )
         Text(
             text = "Total Salary: ${paySlip.totalSalary}",
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.surface
+            color = MaterialTheme.colorScheme.onSecondaryContainer
         )
     }
 }

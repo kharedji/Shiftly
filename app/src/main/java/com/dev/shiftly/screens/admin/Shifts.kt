@@ -40,7 +40,11 @@ fun Shift(navController: NavController) {
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = { navController.navigate(Screen.AddShift.route) }) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Add Employee")
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add Employee",
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
             }
         },
         content = {
@@ -80,30 +84,30 @@ fun Shift(navController: NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(10.dp)
-                .background(MaterialTheme.colorScheme.onBackground, RoundedCornerShape(10.dp))
+                .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(10.dp))
                 .padding(5.dp)
         ) {
             Text(
-                text = "Date: ${employee.employeeName}",
+                text = employee.employeeName,
                 style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.surface
+                color = MaterialTheme.colorScheme.onSecondaryContainer
             )
             Text(
-                text = employee.date,
+                text = "Date: ${employee.date}",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.surface
+                color = MaterialTheme.colorScheme.onSecondaryContainer
 
             )
 
             Text(
                 text = "Start Time: ${employee.startTime}",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.surface
+                color = MaterialTheme.colorScheme.onSecondaryContainer
             )
             Text(
                 text = "End Time: ${employee.endTime}",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.surface
+                color = MaterialTheme.colorScheme.onSecondaryContainer
             )
         }
     }

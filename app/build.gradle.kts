@@ -77,6 +77,8 @@ dependencies {
     implementation(libs.firebase.database.ktx)
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.material)
+    implementation(libs.firebase.storage.ktx)
+    implementation(libs.androidx.ui.text.google.fonts)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -100,6 +102,7 @@ dependencies {
 
     implementation ("com.google.code.gson:gson:2.11.0")
 
+    implementation("io.coil-kt:coil-compose:2.1.0")
 
 
     //Room

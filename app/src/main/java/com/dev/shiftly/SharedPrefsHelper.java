@@ -32,7 +32,7 @@ public class SharedPrefsHelper {
     public void setLOW_END_WARNING(boolean low_end_warning) {
         sharedPreferences.edit().putBoolean(LOW_END_WARNING, low_end_warning).apply();
     }
-  public void PutString(String key,String value) {
+  public void putString(String key, String value) {
      sharedPreferences.edit().putString(key, value).apply();
   }
 

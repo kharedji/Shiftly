@@ -8,6 +8,9 @@ class Employee(
     var email: String = "",
     var password: String = "",
     var type: String = "",
+    var isAvailable: Boolean = true,
     var adminId :String ="",
+    var imageUri: String = "",
+    var company: String = "",
 ) {
 }

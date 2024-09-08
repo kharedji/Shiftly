@@ -7,6 +7,7 @@ import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,6 +31,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
@@ -50,7 +52,11 @@ import java.util.Date
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
-fun AddEmployeePaySlip(navController: NavController, json: String) {
+fun AddEmployeePaySlip(
+    navController: NavController,
+    json: String,
+    paddingValues: PaddingValues
+) {
     val year = Calendar.getInstance().get(Calendar.YEAR)
     val years = (year - 50..year).toList()
     var expanded by remember { mutableStateOf(false) }
@@ -140,7 +146,7 @@ fun AddEmployeePaySlip(navController: NavController, json: String) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp)
+                    .padding(paddingValues)
                     .verticalScroll(verticalScroll),
                 verticalArrangement = Arrangement.Top
             ) {
@@ -245,7 +251,9 @@ fun AddEmployeePaySlip(navController: NavController, json: String) {
         }
 
         else -> {
-            // Handle loading or error state here
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = "No shifts available to calculate payslip!")
+            }
         }
     }
 }

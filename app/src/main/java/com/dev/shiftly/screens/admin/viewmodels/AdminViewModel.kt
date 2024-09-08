@@ -19,6 +19,10 @@ class AdminViewModel @Inject constructor(
         return repository.addEmployee(employee, currentEmployee)
     }
 
+    fun getEmployeeById(employeeId: String): LiveData<State<Employee?>> {
+        return repository.getEmployeeById(employeeId)
+    }
+
     fun updateEmployee(employee: Employee): LiveData<State<String>> {
         return repository.updateEmployee(employee)
     }

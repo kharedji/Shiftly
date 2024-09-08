@@ -308,6 +308,7 @@ fun EmployeeSelectionDialog(
     onEmployeeSelected: (Employee) -> Unit,
     onDismissRequest: () -> Unit
 ) {
+    val context = LocalContext.current
     Dialog(onDismissRequest = onDismissRequest) {
         Surface(
             shape = RoundedCornerShape(8.dp),
@@ -326,8 +327,16 @@ fun EmployeeSelectionDialog(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    onEmployeeSelected(employee)
-                                    onDismissRequest()
+                                    if (employee.isAvailable){
+                                        onEmployeeSelected(employee)
+                                        onDismissRequest()
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            "Employee is not available for shift",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
                                 }
                                 .padding(horizontal = 16.dp, vertical = 5.dp),
                             headlineContent = {

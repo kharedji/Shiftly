@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,9 +26,12 @@ import androidx.navigation.NavController
 import com.dev.shiftly.SharedPrefsHelper
 import com.dev.shiftly.data.data_source.Employee
 import com.dev.shiftly.data.data_source.PaySlips
+import com.dev.shiftly.navigation.Screen
 import com.dev.shiftly.screens.admin.PaySlipsList
 import com.dev.shiftly.screens.admin.viewmodels.PaySlipsViewModel
 import com.google.gson.Gson
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @Composable
 fun EmployeePaySlips(navController: NavController? = null){
@@ -35,22 +39,26 @@ fun EmployeePaySlips(navController: NavController? = null){
     val context = LocalContext.current
     var currentUser = remember { mutableStateOf(Employee()) }
     val paySlipsViewModel: PaySlipsViewModel = hiltViewModel()
-    val paySlipState by paySlipsViewModel.allEmployeePaySlips(currentUser.value.id).observeAsState()
+    val paySlipState by paySlipsViewModel.paySlipState.observeAsState()
     LaunchedEffect(key1 = Unit) {
         val userJson = SharedPrefsHelper.getInstance(context).getString("user")
         if (userJson != null) {
             currentUser.value = Gson().fromJson(userJson, Employee::class.java)
+            paySlipsViewModel.getPayslipsById(currentUser.value.id)
         }
     }
 
-    when {
-        paySlipState?.loading == true -> com.dev.shiftly.screens.admin.ProgressDialog()
-        paySlipState?.error != null -> com.dev.shiftly.screens.admin.ErrorScreen(message = paySlipState!!.error)
-        paySlipState?.data != null -> PaySlipsList(
-            paySlips = paySlipState!!.data!!,
-            navController!!
-        )
+    Column (modifier = Modifier.fillMaxSize()) {
+        when {
+            paySlipState?.loading == true -> com.dev.shiftly.screens.admin.ProgressDialog()
+            paySlipState?.error != null -> com.dev.shiftly.screens.admin.ErrorScreen(message = paySlipState!!.error)
+            paySlipState?.data != null -> PaySlipsList(
+                paySlips = paySlipState!!.data!!,
+                navController!!
+            )
+        }
     }
+
 }
 
 @Composable
@@ -61,7 +69,10 @@ fun PaySlipsList(
     LazyColumn(modifier = Modifier.padding(5.dp)) {
         items(paySlips) { employee ->
             PaySlipItem(employee) { it ->
-//                navController.navigate(Screen.EmployeeDetails.route)
+                val gson = Gson()
+                val employeesJson = gson.toJson(employee)
+                val encodedJson = URLEncoder.encode(employeesJson, StandardCharsets.UTF_8.toString())
+                navController?.navigate(Screen.PaySlipDetails.withArgs("${encodedJson}"))
             }
         }
     }
@@ -73,29 +84,29 @@ fun PaySlipItem(paySlip: PaySlips, onClick: (PaySlips) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
-            .background(MaterialTheme.colorScheme.onBackground, RoundedCornerShape(10.dp))
+            .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(10.dp))
             .padding(5.dp)
             .clickable { onClick(paySlip) }
     ) {
         Text(
             text = paySlip.date,
             style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.surface
+            color = MaterialTheme.colorScheme.onSecondaryContainer
         )
         Text(
             text = "Working Hours: ${paySlip.totalWorkingHours}",
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.surface
+            color = MaterialTheme.colorScheme.onSecondaryContainer
         )
         Text(
             text = "Salary Per Hour: ${paySlip.salaryPerHour}",
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.surface
+            color = MaterialTheme.colorScheme.onSecondaryContainer
         )
         Text(
             text = "Total Salary: ${paySlip.totalSalary}",
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.surface
+            color = MaterialTheme.colorScheme.onSecondaryContainer
         )
     }
 }

@@ -72,7 +72,8 @@ fun SignInScreen(
         navController?.apply {
             val gson = Gson()
             val json = gson.toJson(it)
-            SharedPrefsHelper.getInstance(context).PutString("user",json)
+            SharedPrefsHelper.getInstance(context).putString("user",json)
+            SharedPrefsHelper.getInstance(context).putString("user_type", it.type)
             if (it.type == "admin"){
                 navigate(Screen.Main.route)
             }else{

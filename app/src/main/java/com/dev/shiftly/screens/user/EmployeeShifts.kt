@@ -33,6 +33,8 @@ import com.dev.shiftly.data.data_source.Shifts
 import com.dev.shiftly.navigation.Screen
 import com.dev.shiftly.screens.admin.viewmodels.ShiftsViewModel
 import com.google.gson.Gson
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @Composable
 fun EmployeeShifts(navController: NavController? = null){
@@ -48,10 +50,13 @@ fun EmployeeShifts(navController: NavController? = null){
         }
     }
 
-    when {
-        shiftsState.value?.loading == true -> ProgressDialog()
-        shiftsState.value?.error != null -> ErrorScreen(message = shiftsState.value?.error)
-        shiftsState.value?.data != null -> EmployeeShiftsList(shifts = shiftsState.value!!.data!! , navController!!)
+    Column(modifier = Modifier.fillMaxSize()) {
+        when {
+            shiftsState.value?.loading == true -> ProgressDialog()
+            shiftsState.value?.error != null -> ErrorScreen(message = shiftsState.value?.error)
+            shiftsState.value?.data != null -> EmployeeShiftsList(shifts = shiftsState.value!!.data!! , navController!!)
+        }
+
     }
 
 }
@@ -64,7 +69,10 @@ fun EmployeeShiftsList(
     LazyColumn(modifier = Modifier.padding(5.dp)) {
         items(shifts) { employee ->
             ShiftItem(employee) { it ->
-                navController.navigate(Screen.EmployeeDetails.route)
+                val gson = Gson()
+                val employeesJson = gson.toJson(employee)
+                val encodedJson = URLEncoder.encode(employeesJson, StandardCharsets.UTF_8.toString())
+                navController?.navigate(Screen.PaySlipDetails.withArgs("${encodedJson}"))
             }
         }
     }
@@ -76,30 +84,30 @@ fun ShiftItem(employee: Shifts, onClick: (Shifts) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp)
-            .background(MaterialTheme.colorScheme.onBackground, RoundedCornerShape(10.dp))
+            .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(10.dp))
             .padding(5.dp)
     ) {
         Text(
-            text = "Date: ${employee.employeeName}",
+            text = employee.employeeName,
             style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.surface
+            color = MaterialTheme.colorScheme.onSecondaryContainer
         )
         Text(
-            text = employee.date,
+            text = "Date: ${employee.date}",
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.surface
+            color = MaterialTheme.colorScheme.onSecondaryContainer
 
         )
 
         Text(
             text = "Start Time: ${employee.startTime}",
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.surface
+            color = MaterialTheme.colorScheme.onSecondaryContainer
         )
         Text(
             text = "End Time: ${employee.endTime}",
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.surface
+            color = MaterialTheme.colorScheme.onSecondaryContainer
         )
     }
 }
@@ -124,6 +132,6 @@ fun ErrorScreen(message: String?) {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Text(text = message ?: "Unknown Error", color = Color.Red)
+        Text(text = message ?: "Unknown Error", color = MaterialTheme.colorScheme.error)
     }
 }

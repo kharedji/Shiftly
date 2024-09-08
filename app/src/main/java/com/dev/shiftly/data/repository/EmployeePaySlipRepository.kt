@@ -46,6 +46,31 @@ class EmployeePaySlipRepository @Inject constructor() {
         return stateLiveData
     }
 
+    suspend fun getPaySlipById(employeeId: String): Result<List<PaySlips>> {
+        val database = FirebaseDatabase.getInstance()
+        val paySlipsRef = database.getReference("paySlips")
+
+        return try {
+            // Perform a query to get the pay slips for the specific employee ID
+            val snapshot = paySlipsRef
+                .orderByChild("employeeId")
+                .equalTo(employeeId)
+                .get()
+                .await() // Await the query result
+
+            // Extract the list of PaySlips from the snapshot
+            val paySlips = snapshot.children.mapNotNull { it.getValue(PaySlips::class.java) }
+
+            if (paySlips.isNotEmpty()) {
+                Result.success(paySlips)
+            } else {
+                Result.failure(Exception("No PaySlips found for the employee"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e) // Return the failure with the exception
+        }
+    }
+
     suspend fun savePaySlip(shift: PaySlips): Result<Unit> {
          val dbRef: DatabaseReference = FirebaseDatabase.getInstance().getReference("paySlips")
 

@@ -1,5 +1,6 @@
 package com.dev.shiftly.domain.repository
 
+import android.content.Context
 import com.dev.shiftly.data.data_source.Employee
 import com.dev.shiftly.data.utils.State
 import com.google.firebase.auth.AuthResult
@@ -12,7 +13,7 @@ interface UserRepository {
     val auth: FirebaseAuth
     val database: FirebaseDatabase
 
-    suspend fun signUpUser(email: String, password: String): Flow<State<AuthResult>>
+    suspend fun signUpUser(employee: Employee, context: Context): Flow<State<AuthResult>>
     suspend fun signInUser(email: String, password: String): Flow<State<Employee>>
   
 }
