@@ -3,6 +3,7 @@ package com.dev.shiftly
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ExitToApp
@@ -43,6 +45,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -120,24 +123,19 @@ fun MainScaffold(
                         fontWeight = FontWeight.Bold
                     )
                 },
-                /*navigationIcon = {
-                    if (currentDestination.value?.destination?.route != Screen.SignIn.route || currentDestination.value?.destination?.route != Screen.SignUp.route){
-                        IconButton(onClick = {
-                            coroutineScope.launch {
-                                drawerState.open()
-                            }
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = "drawer icon"
-                            )
-                        }
+                navigationIcon = {
 
-                    }
-                },*/
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_launcher),
+                        contentDescription = "drawer icon",
+                        modifier = Modifier.size(40.dp)
+                    )
+
+                },
                 actions = {
                     IconButton(onClick = {
-                        val user = SharedPrefsHelper.getInstance(navController.context).getString("user")
+                        val user =
+                            SharedPrefsHelper.getInstance(navController.context).getString("user")
                         val currentUser = Gson().fromJson(user, Employee::class.java)
                         navController.navigate(Screen.Profile.withArgs(currentUser.id))
                     }) {
@@ -177,7 +175,7 @@ fun DrawerContent(
     drawerState: DrawerState
 ) {
     val scope = rememberCoroutineScope()
-    var currentUser by remember { mutableStateOf(Employee())}
+    var currentUser by remember { mutableStateOf(Employee()) }
     val context = LocalContext.current
     var isChecked by remember { mutableStateOf(false) }
     val adminViewModel: AdminViewModel = hiltViewModel()
@@ -185,7 +183,7 @@ fun DrawerContent(
         val user = SharedPrefsHelper.getInstance(context).getString("user")
         currentUser = Gson().fromJson(user, Employee::class.java)
     }
-    Column (
+    Column(
         modifier = Modifier
             .fillMaxWidth(0.4f)
             .fillMaxHeight()
@@ -196,7 +194,7 @@ fun DrawerContent(
             color = Color.Black,
             fontStyle = MaterialTheme.typography.headlineMedium.fontStyle,
         )
-        if (currentUser.type != "admin"){
+        if (currentUser.type != "admin") {
             Spacer(modifier = Modifier.height(20.dp))
             Text(
                 text = currentUser.position,
@@ -204,10 +202,10 @@ fun DrawerContent(
                 fontStyle = MaterialTheme.typography.headlineSmall.fontStyle,
             )
             Spacer(modifier = Modifier.height(20.dp))
-            Row (
+            Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
-            ){
+            ) {
                 Text(
                     text = "Are you available?",
                     color = Color.Black,
@@ -239,11 +237,11 @@ fun DrawerContent(
                 },
             verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
         ) {
-           Text(
-               text = "Sign Out",
-               color = Color.Black,
-               fontStyle = MaterialTheme.typography.headlineSmall.fontStyle,
-           )
+            Text(
+                text = "Sign Out",
+                color = Color.Black,
+                fontStyle = MaterialTheme.typography.headlineSmall.fontStyle,
+            )
             Icon(imageVector = Icons.Default.ExitToApp, contentDescription = "sign out")
         }
     }

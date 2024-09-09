@@ -1,5 +1,4 @@
 package com.dev.shiftly.navigation
-
 import android.util.Log
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
@@ -17,7 +16,6 @@ import com.dev.shiftly.SharedPrefsHelper
 import com.dev.shiftly.data.data_source.Employee
 import com.dev.shiftly.data.data_source.PaySlips
 import com.dev.shiftly.data.data_source.Shifts
-import com.dev.shiftly.screens.admin.AddEmployee
 import com.dev.shiftly.screens.admin.AddEmployeePaySlip
 import com.dev.shiftly.screens.admin.AddEmployeeShifts
 import com.dev.shiftly.screens.admin.PaySlips
@@ -87,12 +85,6 @@ fun Navigation(
                 navController = navController
             )
         }
-
-        composable(route = Screen.AddEmployee.route) {
-            title.value = "Add Employee"
-            AddEmployee(padding, navController)
-        }
-
         composable(route = Screen.AddShift.route) {
             title.value = "Add Shift"
             AddEmployeeShifts(padding, navController)
